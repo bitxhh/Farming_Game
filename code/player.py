@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.status = 'down_idle'
         self.frame_index = 0
 
-        self.image = self.animations[self.status][str(self.frame_index)]
+        self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(center=pos)
 
         self.z = LAYERS['main']
@@ -26,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.center)
 
-        self.hitbox = self.rect.copy().inflate((-146, -140))
+        self.hitbox = self.rect.inflate((-146, -140))
         self.collision_sprites = collision_sprites
 
         # timer
@@ -97,14 +97,14 @@ class Player(pygame.sprite.Sprite):
                            'right_water': [], 'left_water': [], 'up_water': [], 'down_water': []}
         for animation in self.animations.keys():
             full_path = 'graphics/character/' + animation
-            self.animations[animation] = import_folder_dict(full_path)
+            self.animations[animation] = import_folder(full_path)
 
     def animate(self, dt):
         self.frame_index += 4 * dt
         if self.frame_index >= len(self.animations[self.status]):
             self.frame_index = 0
 
-        self.image = self.animations[self.status][str(int(self.frame_index))]
+        self.image = self.animations[self.status][int(self.frame_index)]
 
     def tool_animation(self):
         if not self.timers['delay'].active:
@@ -113,7 +113,7 @@ class Player(pygame.sprite.Sprite):
         if self.frame_index >= len(self.animations[self.status]):
             self.frame_index = 0
 
-        self.image = self.animations[self.status][str(int(self.frame_index))]
+        self.image = self.animations[self.status][int(self.frame_index)]
 
     def input(self):
         keys = pygame.key.get_pressed()

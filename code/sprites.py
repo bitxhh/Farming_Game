@@ -22,7 +22,6 @@ class Interaction(Generic):
 
 class Water(Generic):
     def __init__(self, pos, frames, group):
-
         self.frames = frames
         self.frame_index = 0
 
@@ -58,6 +57,7 @@ class Particle(Generic):
     def update(self, dt):
         current_time = pygame.time.get_ticks()
         if current_time - self.start_time > self.duration:
+            print(f'zdarova')
             self.kill()
 
         # masks
@@ -75,7 +75,7 @@ class Tree(Generic):
         self.alive = True
         stump_path = f'graphics/stumps/{"small" if name == "Small" else "large"}.png'
         self.stump_surface = pygame.image.load(stump_path).convert_alpha()
-
+        self.groups = group
         self.apple_surf = pygame.image.load('graphics/fruit/apple.png')
         self.apple_pos = APPLE_POS[name]
         self.apple_group = pygame.sprite.Group()
@@ -86,35 +86,34 @@ class Tree(Generic):
 
     def damage(self):
         self.health -= 1
-        print(self.health)
         self.axe_sound.play()
+        print(len(self.apple_group))
 
         if (len(self.apple_group.sprites())) > 0:
             random_apple = choice(self.apple_group.sprites())
             Particle(pos=random_apple.rect.topleft,
                      surf=random_apple.image,
-                     group=self.groups()[0],
+                     group=self.groups[0],
                      z=LAYERS['fruit'])
             self.player_add('apple')
-            print('яблоку пиздец')
             random_apple.kill()
 
     def check_status(self):
         if self.health == self.critical_damage:
             Particle(pos=self.rect.topleft,
                      surf=self.image,
-                     group=self.groups()[0],
+                     group=self.groups[0],
                      z=LAYERS['fruit'],
                      duration=500)
             self.player_add('wood')
             self.image = self.stump_surface
             self.rect = self.image.get_rect(midbottom=self.rect.midbottom)
-            self.hitbox = self.rect.copy().inflate(-10, -self.rect.height * 0.6)
+            self.hitbox = self.rect.inflate(-10, -self.rect.height * 0.6)
             self.critical_damage += 1
         if self.health == 0:
             Particle(pos=self.rect.topleft,
                      surf=self.image,
-                     group=self.groups()[0],
+                     group=self.groups[0],
                      z=LAYERS['fruit'],
                      duration=500)
             self.player_add('wood')
@@ -130,5 +129,4 @@ class Tree(Generic):
             if randint(0, 10) < 2:
                 x = pos[0] + self.rect.left
                 y = pos[1] + self.rect.top
-                Generic((x, y), self.apple_surf, [self.apple_group, self.groups()[0]], LAYERS['fruit'])
-
+                Generic((x, y), self.apple_surf, [self.apple_group, self.groups[0]], LAYERS['fruit'])
